@@ -3,724 +3,1761 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>體驗課程預約 | 衡點健身</title>
-    <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <title>健身體驗問卷</title>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <style>
-        :root {
-            --white: #ffffff;
-            --gray: #808080;
-            --green: #7ac19a;
-            --green-light: #e2ede6;
-            --green-dark: #5f846f;
-            --pink: #f2ac98;
-            --pink-light: #faece8;
-            --pink-dark: #c67566;
-            --yellow: #ffe08b;
-            --yellow-light: #fcf4e3;
-            --yellow-dark: #ba9e60;
-            --blue: #9fcccc;
-            --blue-light: #daedec;
-            --blue-dark: #66888e;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(180deg, var(--green-light) 0%, var(--white) 100%);
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            background: linear-gradient(135deg, #e2ede6 0%, #daedec 100%);
             min-height: 100vh;
-            padding: 20px;
-            padding-bottom: 100px;
+            padding: 15px;
+            overflow-x: hidden;
+            touch-action: pan-y;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        .container { max-width: 500px; margin: 0 auto; }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
 
-        .header { text-align: center; padding: 25px 20px; }
-        .header h1 { font-size: 32px; font-weight: 700; color: var(--green-dark); margin-bottom: 8px; letter-spacing: 8px; }
-        .header p { font-size: 16px; color: var(--gray); font-weight: 500; }
+        .progress-bar {
+            height: 14px;
+            background: 
+                radial-gradient(ellipse at top, rgba(255, 255, 255, 0.6) 0%, transparent 70%),
+                linear-gradient(135deg, 
+                    #f8fcfa 0%, 
+                    #f2f9f6 15%,
+                    #ecf7f2 30%,
+                    #e8f5f1 45%, 
+                    #e2ede6 60%, 
+                    #d8e9de 75%,
+                    #d0e5d9 90%,
+                    #cce3d8 100%);
+            position: relative;
+            overflow: visible;
+            border-radius: 25px;
+            box-shadow: 
+                inset 0 4px 8px rgba(95, 132, 111, 0.06),
+                inset 0 2px 4px rgba(95, 132, 111, 0.1),
+                inset 0 -1px 2px rgba(255, 255, 255, 0.5),
+                0 2px 6px rgba(255, 255, 255, 0.95),
+                0 4px 12px rgba(122, 193, 154, 0.04);
+            padding: 3px;
+            background-clip: padding-box;
+        }
 
-        .card { background: var(--white); border-radius: 20px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(95, 132, 111, 0.1); }
-        .card-title { font-size: 18px; font-weight: 600; color: var(--green-dark); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
-        .card-title .icon { font-size: 24px; }
+        .progress-fill {
+            height: 100%;
+            background: 
+                linear-gradient(180deg, 
+                    rgba(255, 255, 255, 0.5) 0%, 
+                    rgba(255, 255, 255, 0.2) 25%,
+                    rgba(255, 255, 255, 0) 50%,
+                    rgba(0, 0, 0, 0.02) 75%,
+                    rgba(0, 0, 0, 0.04) 100%),
+                linear-gradient(135deg, 
+                    #2d7a4d 0%, #3d8c5f 8%, #4a9d6f 16%, #58b07e 24%,
+                    #6fc99b 32%, #7ac19a 40%, #87c9a5 48%, #95d1b5 56%,
+                    #a5d8c5 64%, #aad9d9 72%, #b3dedd 80%, #bde3e3 88%,
+                    #c8e8e9 96%, #d0ecee 100%);
+            position: relative;
+            transition: width 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+            box-shadow: 
+                0 0 30px rgba(122, 193, 154, 0.6),
+                0 0 50px rgba(122, 193, 154, 0.35),
+                0 3px 12px rgba(95, 132, 111, 0.35),
+                inset 0 2px 1px rgba(255, 255, 255, 0.7),
+                inset 0 -2px 1px rgba(0, 0, 0, 0.08);
+            border-radius: 22px;
+            overflow: hidden;
+        }
 
-        .steps { display: flex; justify-content: center; align-items: center; gap: 8px; margin-bottom: 25px; padding: 15px; background: var(--white); border-radius: 50px; box-shadow: 0 2px 10px rgba(95, 132, 111, 0.1); }
-        .step { width: 40px; height: 40px; border-radius: 50%; background: var(--green-light); color: var(--gray); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 15px; transition: all 0.3s ease; }
-        .step.active { background: var(--green); color: var(--white); box-shadow: 0 4px 12px rgba(122, 193, 154, 0.4); transform: scale(1.1); }
-        .step.completed { background: var(--green-dark); color: var(--white); }
-        .step-line { width: 40px; height: 3px; background: var(--green-light); border-radius: 2px; }
-        .step-line.completed { background: var(--green-dark); }
+        .content {
+            padding: 30px 20px;
+        }
 
-        .course-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .course-card { border: 2px solid transparent; border-radius: 16px; padding: 18px 12px; text-align: center; cursor: pointer; transition: all 0.3s ease; }
-        .course-card[data-course="ai"] { background: var(--blue-light); }
-        .course-card[data-course="ai"]:hover { border-color: var(--blue); transform: translateY(-3px); box-shadow: 0 8px 20px rgba(159, 204, 204, 0.3); }
-        .course-card[data-course="ai"].selected { background: var(--blue); border-color: var(--blue-dark); }
-        .course-card[data-course="pilates"] { background: var(--pink-light); }
-        .course-card[data-course="pilates"]:hover { border-color: var(--pink); transform: translateY(-3px); box-shadow: 0 8px 20px rgba(242, 172, 152, 0.3); }
-        .course-card[data-course="pilates"].selected { background: var(--pink); border-color: var(--pink-dark); }
-        .course-card[data-course="weight"] { background: var(--green-light); }
-        .course-card[data-course="weight"]:hover { border-color: var(--green); transform: translateY(-3px); box-shadow: 0 8px 20px rgba(122, 193, 154, 0.3); }
-        .course-card[data-course="weight"].selected { background: var(--green); border-color: var(--green-dark); }
-        .course-card[data-course="stretch"] { background: var(--yellow-light); }
-        .course-card[data-course="stretch"]:hover { border-color: var(--yellow); transform: translateY(-3px); box-shadow: 0 8px 20px rgba(255, 224, 139, 0.3); }
-        .course-card[data-course="stretch"].selected { background: var(--yellow); border-color: var(--yellow-dark); }
-        .course-card.selected .course-icon, .course-card.selected .course-name, .course-card.selected .course-duration, .course-card.selected .course-price, .course-card.selected .course-note { color: var(--white); }
-        .course-icon { font-size: 40px; margin-bottom: 10px; display: block; }
-        .course-name { font-size: 18px; font-weight: 700; color: #333; line-height: 1.3; margin-bottom: 6px; }
-        .course-duration { font-size: 12px; color: var(--gray); margin-bottom: 6px; }
-        .course-price { font-size: 14px; font-weight: 600; color: #333; margin-bottom: 4px; }
-        .course-note { font-size: 10px; color: var(--gray); line-height: 1.4; min-height: 28px; }
+        .question-page {
+            display: none;
+        }
 
-        .calendar { background: var(--white); border-radius: 16px; overflow: hidden; }
-        .calendar-header { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: var(--green-light); }
-        .calendar-nav { width: 40px; height: 40px; border: none; background: var(--white); border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--green-dark); transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .calendar-nav:hover { background: var(--green); color: var(--white); }
-        .calendar-nav:disabled { opacity: 0.3; cursor: not-allowed; }
-        .calendar-nav:disabled:hover { background: var(--white); color: var(--green-dark); }
-        .calendar-title { font-size: 18px; font-weight: 600; color: var(--green-dark); }
-        .calendar-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); background: var(--green-light); padding: 10px 5px; }
-        .calendar-weekday { text-align: center; font-size: 12px; font-weight: 600; color: var(--green-dark); padding: 5px; }
-        .calendar-weekday.weekend { color: var(--pink-dark); }
-        .calendar-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; padding: 10px; }
-        .calendar-day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.3s ease; color: #333; }
-        .calendar-day:hover:not(.disabled):not(.empty) { background: var(--green-light); }
-        .calendar-day.today { border: 2px solid var(--gray); color: var(--gray); }
-        .calendar-day.selected { background: var(--green); color: var(--white); font-weight: 600; }
-        .calendar-day.disabled { color: #ddd; cursor: not-allowed; }
-        .calendar-day.empty { cursor: default; }
+        .question-page.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
 
-        .selected-date-display { background: var(--green-light); border-radius: 12px; padding: 15px; margin-top: 15px; text-align: center; display: none; }
-        .selected-date-display.show { display: block; }
-        .selected-date-text { font-size: 16px; font-weight: 600; color: var(--green-dark); }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-        .time-slots-section { margin-top: 20px; display: none; }
-        .time-slots-section.show { display: block; }
-        .time-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .time-slot { padding: 14px 8px; background: var(--green-light); border-radius: 10px; text-align: center; cursor: pointer; transition: all 0.3s ease; border: 2px solid transparent; }
-        .time-slot:hover:not(.disabled) { border-color: var(--green); transform: translateY(-2px); }
-        .time-slot.selected { background: var(--green); border-color: var(--green-dark); color: var(--white); }
-        .time-slot-time { font-size: 15px; font-weight: 600; }
-        .time-slots-title { font-size: 16px; font-weight: 600; color: var(--green-dark); margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        h2 {
+            color: #5f846f;
+            font-size: 22px;
+            margin-bottom: 10px;
+            word-wrap: break-word;
+            line-height: 1.4;
+        }
 
-        .summary-box { background: var(--green-light); border-radius: 16px; padding: 20px; margin-bottom: 20px; }
-        .summary-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(95, 132, 111, 0.2); }
-        .summary-item:last-child { border-bottom: none; }
-        .summary-label { color: var(--gray); font-size: 14px; }
-        .summary-value { font-weight: 600; color: var(--green-dark); font-size: 15px; }
+        .subtitle {
+            color: #808080;
+            font-size: 14px;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
 
-        .btn { width: 100%; padding: 16px; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-primary { background: var(--green); color: var(--white); box-shadow: 0 4px 15px rgba(122, 193, 154, 0.4); }
-        .btn-primary:hover:not(:disabled) { background: var(--green-dark); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(95, 132, 111, 0.4); }
-        .btn-primary:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; transform: none; }
-        .btn-secondary { background: var(--green-light); color: var(--green-dark); }
-        .btn-secondary:hover { background: #d5e5da; }
-        .btn-payment { background: linear-gradient(135deg, var(--pink) 0%, var(--pink-dark) 100%); color: var(--white); box-shadow: 0 4px 15px rgba(242, 172, 152, 0.4); font-size: 18px; padding: 18px; }
-        .btn-danger { background: var(--pink-dark); color: var(--white); box-shadow: 0 4px 15px rgba(198, 117, 102, 0.4); }
-        .btn-danger:hover { background: #b5655a; }
-        .btn-group { display: flex; gap: 12px; margin-top: 20px; }
-        .btn-group .btn { flex: 1; }
-        .btn-confirm { background: linear-gradient(135deg, var(--green) 0%, var(--green-dark) 100%); color: white; box-shadow: 0 4px 15px rgba(122, 193, 154, 0.4); }
-        .btn-confirm:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(95, 132, 111, 0.5); }
-        .btn-confirm:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; transform: none; }
+        .option-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+            max-width: 100%;
+        }
 
-        .loading { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; }
-        .spinner { width: 40px; height: 40px; border: 4px solid var(--green-light); border-top-color: var(--green); border-radius: 50%; animation: spin 1s linear infinite; }
+        .option {
+            background: #fff5f5;
+            border: 2px solid #ffe8e8;
+            border-radius: 12px;
+            padding: 14px 16px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            max-width: 100%;
+            word-wrap: break-word;
+            min-height: 52px;
+        }
+
+        .option:active { transform: scale(0.98); }
+
+        .option:hover {
+            background: #ffeaea;
+            border-color: #ffd5d5;
+            transform: translateX(3px);
+        }
+
+        .option.selected {
+            background: linear-gradient(135deg, #c8e6d7 0%, #e8f5f0 100%);
+            border-color: #7ac19a;
+            color: #2d5a3d;
+            box-shadow: 0 4px 15px rgba(122, 193, 154, 0.5);
+            font-weight: 600;
+        }
+
+        .detail-input {
+            margin-top: 12px;
+            background: #fffafa !important;
+            border-color: #ffe8e8 !important;
+            font-size: 14px;
+            color: #4a6859;
+        }
+
+        .detail-input::placeholder { color: #a89a9a; opacity: 0.7; }
+
+        .detail-input:focus {
+            border-color: #c0ddd0 !important;
+            box-shadow: 0 0 0 4px rgba(212, 235, 224, 0.15) !important;
+            background: #ffffff !important;
+        }
+
+        .option input[type="checkbox"],
+        .option input[type="radio"] {
+            width: 22px; height: 22px;
+            cursor: pointer;
+            flex-shrink: 0;
+            accent-color: #5f846f;
+        }
+
+        .option.selected input[type="checkbox"],
+        .option.selected input[type="radio"] {
+            accent-color: #2d5a3d;
+        }
+
+        .text-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2ede6;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-top: 10px;
+            transition: border-color 0.2s;
+            max-width: 100%;
+        }
+
+        .text-input:focus {
+            outline: none;
+            border-color: #7ac19a;
+            box-shadow: 0 0 0 3px rgba(122, 193, 154, 0.1);
+        }
+
+        .text-input:disabled {
+            background: #f5f5f5;
+            cursor: not-allowed;
+        }
+
+        .button {
+            background: linear-gradient(135deg, #7ac19a 0%, #9fcccc 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            padding: 15px 35px;
+            font-size: 17px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            font-weight: 600;
+            -webkit-tap-highlight-color: transparent;
+            position: relative;
+            overflow: hidden;
+            min-height: 52px;
+        }
+
+        .button::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 0; height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .button:active::before { width: 300px; height: 300px; }
+        .button:active { transform: scale(0.98); }
+        .button:disabled { background: #808080; cursor: not-allowed; transform: none; }
+
+        .button.secondary {
+            background: #ffffff;
+            color: #7ac19a;
+            border: 2px solid #7ac19a;
+        }
+
+        .button.warning {
+            background: linear-gradient(135deg, #f2ac98 0%, #c67566 100%);
+            color: #ffffff;
+        }
+
+        .error-message {
+            color: #c67566;
+            font-size: 14px;
+            margin-top: 8px;
+            padding: 10px;
+            background: #fff5f5;
+            border-radius: 6px;
+            border-left: 3px solid #c67566;
+        }
+
+        .required { color: #f2ac98; }
+
+        input[type="date"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2ede6;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        input[type="date"]:focus {
+            outline: none;
+            border-color: #7ac19a;
+            box-shadow: 0 0 0 3px rgba(122, 193, 154, 0.1);
+        }
+
+        .editable-section {
+            background: #ffffff;
+            border: 2px solid #e2ede6;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .editable-section h3 {
+            color: #5f846f;
+            margin-bottom: 15px;
+            font-size: 17px;
+        }
+
+        .edit-button {
+            position: absolute;
+            top: 20px; right: 20px;
+            background: #7ac19a;
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            min-height: 36px;
+        }
+
+        .edit-button:active {
+            background: #5f846f;
+            transform: scale(0.95);
+        }
+
+        .edit-field { margin-bottom: 12px; }
+
+        .edit-field label {
+            display: block;
+            color: #5f846f;
+            font-size: 14px;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .edit-field input,
+        .edit-field select,
+        .edit-field textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid #e2ede6;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border-color 0.2s;
+        }
+
+        .edit-field input:focus,
+        .edit-field select:focus,
+        .edit-field textarea:focus {
+            outline: none;
+            border-color: #7ac19a;
+            box-shadow: 0 0 0 3px rgba(122, 193, 154, 0.1);
+        }
+
+        .basic-info-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .basic-info-grid .full-width { grid-column: 1 / -1; }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .nav-buttons .button { flex: 1; }
+
+        .nav-buttons-three {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .nav-buttons-three .button-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-buttons-three .button-row .button { flex: 1; }
+
+        .email-domain-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .email-domain-item:last-child { border-bottom: none; }
+        .email-domain-item:active { background: #e2ede6; }
+
+        .completion-modern {
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .completion-icon-wrapper {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 30px;
+        }
+
+        .completion-icon-bg {
+            width: 120px; height: 120px;
+            background: linear-gradient(135deg, #7ac19a 0%, #9fcccc 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(122, 193, 154, 0.3);
+            animation: success-pop 0.6s ease-out;
+        }
+
+        @keyframes success-pop {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .completion-icon-bg::before {
+            content: '';
+            position: absolute;
+            width: 140px; height: 140px;
+            border: 3px solid #7ac19a;
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: pulse-ring 2s ease-out infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% { transform: scale(0.9); opacity: 0.5; }
+            100% { transform: scale(1.2); opacity: 0; }
+        }
+
+        .completion-icon {
+            font-size: 60px;
+            color: #ffffff;
+        }
+
+        .completion-title {
+            color: #5f846f;
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            animation: fade-in-up 0.6s ease-out 0.2s both;
+        }
+
+        @keyframes fade-in-up {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .completion-subtitle {
+            color: #66888e;
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            animation: fade-in-up 0.6s ease-out 0.3s both;
+        }
+
+        .completion-info-cards {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 25px;
+            animation: fade-in-up 0.6s ease-out 0.4s both;
+        }
+
+        .completion-info-card {
+            background: linear-gradient(135deg, #e2ede6 0%, #daedec 100%);
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid #7ac19a;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .completion-info-card:active { transform: scale(0.98); }
+
+        .completion-info-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .completion-info-title {
+            color: #5f846f;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .completion-info-text {
+            color: #66888e;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .completion-reminder {
+            background: #fcf4e3;
+            border: 2px solid #ffe08b;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 25px;
+            animation: fade-in-up 0.6s ease-out 0.5s both;
+        }
+
+        .completion-reminder-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #ba9e60;
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .completion-reminder-text {
+            color: #66888e;
+            font-size: 13px;
+            line-height: 1.6;
+            text-align: left;
+        }
+
+        .completion-book-button {
+            margin-top: 25px;
+            animation: fade-in-up 0.6s ease-out 0.6s both;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .loading-spinner {
+            width: 50px; height: 50px;
+            border: 4px solid #e2ede6;
+            border-top-color: #7ac19a;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
         @keyframes spin { to { transform: rotate(360deg); } }
-        .loading-text { margin-top: 15px; color: var(--gray); font-size: 14px; }
-        .loading-section { padding: 60px 20px; text-align: center; }
 
-        .empty-state { text-align: center; padding: 30px 20px; color: var(--gray); }
-        .empty-state .icon { font-size: 40px; margin-bottom: 10px; opacity: 0.5; }
+        .loading-text {
+            color: #5f846f;
+            font-size: 16px;
+            font-weight: 600;
+        }
 
-        .section { display: none; }
-        .section.active { display: block; }
-
-        .notice { background: var(--blue-light); border-left: 4px solid var(--blue); padding: 15px; border-radius: 0 12px 12px 0; margin-bottom: 20px; }
-        .notice p { color: var(--blue-dark); font-size: 14px; line-height: 1.6; }
-        .confirm-notice { background: var(--pink-light); border-left: 4px solid var(--pink); }
-        .confirm-notice p { color: var(--pink-dark); }
-
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
-        .modal-overlay.active { display: flex; }
-        .modal { background: var(--white); border-radius: 20px; padding: 30px; max-width: 400px; width: 100%; text-align: center; animation: modalIn 0.3s ease; }
-        @keyframes modalIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-        .modal-icon { font-size: 50px; margin-bottom: 15px; }
-        .modal-title { font-size: 20px; font-weight: 600; color: var(--green-dark); margin-bottom: 10px; }
-        .modal-message { color: var(--gray); font-size: 15px; margin-bottom: 25px; }
-
-        .existing-booking-card .card-title { color: var(--yellow-dark); }
-        .existing-summary { background: var(--yellow-light); }
-        .existing-summary .summary-value { color: var(--yellow-dark); }
-        .payment-pending-pink { background: linear-gradient(135deg, var(--pink-light) 0%, var(--pink) 100%); border-radius: 16px; padding: 25px; text-align: center; margin-bottom: 20px; }
-        .payment-pending-header { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 15px; }
-        .payment-pending-icon-small { font-size: 24px; }
-        .payment-pending-pink .payment-pending-title { font-size: 18px; font-weight: 600; color: var(--pink-dark); }
-        .payment-pending-pink .payment-pending-message { font-size: 14px; color: var(--pink-dark); line-height: 1.8; }
-        .confirmed-box { background: linear-gradient(135deg, var(--green-light) 0%, var(--green) 100%); border-radius: 16px; padding: 25px; text-align: center; margin-bottom: 20px; }
-        .confirmed-icon { font-size: 50px; margin-bottom: 10px; }
-        .confirmed-title { font-size: 18px; font-weight: 600; color: var(--green-dark); margin-bottom: 8px; }
-        .confirmed-message { font-size: 14px; color: var(--green-dark); }
-        .divider { height: 1px; background: var(--green-light); margin: 20px 0; }
-
-        .confirm-summary { background: linear-gradient(135deg, var(--green-light) 0%, var(--pink-light) 100%); }
-
-        .success-container-compact { text-align: center; padding: 20px; }
-        .success-header { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 15px; }
-        .success-icon-small { font-size: 32px; }
-        .success-container-compact .success-title { font-size: 22px; font-weight: 700; color: var(--green-dark); }
-        .success-container-compact .success-message { color: var(--gray); font-size: 15px; line-height: 1.6; margin-bottom: 20px; }
-        .reserved-info { background: var(--green-light); border-radius: 12px; padding: 15px; margin: 20px 0; text-align: left; }
-        .reserved-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(95, 132, 111, 0.2); }
-        .reserved-item:last-child { border-bottom: none; }
-        .reserved-label { color: var(--gray); font-size: 14px; }
-        .reserved-value { font-weight: 600; color: var(--green-dark); font-size: 14px; }
-        .warning-box { background: var(--yellow-light); border: 2px solid var(--yellow); border-radius: 12px; padding: 15px; margin: 20px 0; }
-        .warning-box p { color: var(--yellow-dark); font-size: 14px; line-height: 1.6; margin: 0; }
-
-        .rules-box { background: var(--yellow-light); border: 1px solid var(--yellow); border-radius: 12px; padding: 15px; margin-top: 20px; margin-bottom: 15px; }
-        .rules-title { font-size: 14px; font-weight: 600; color: var(--yellow-dark); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
-        .rules-list { font-size: 12px; color: var(--yellow-dark); line-height: 1.8; padding-left: 0; }
-        .rules-list li { margin-bottom: 5px; list-style: none; }
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .content { padding: 25px 18px; }
+            h2 { font-size: 20px; }
+            .button { font-size: 16px; padding: 14px 30px; }
+            .option { padding: 12px 14px; font-size: 15px; }
+            .completion-icon-bg { width: 100px; height: 100px; }
+            .completion-icon { font-size: 50px; }
+            .completion-title { font-size: 22px; }
+            .completion-info-icon { font-size: 28px; }
+            #birthdayYear, #birthdayMonth, #birthdayDay {
+                font-size: 16px !important;
+                padding: 14px 12px !important;
+                min-height: 50px !important;
+            }
+            #venueRules { padding: 15px !important; font-size: 14px !important; }
+            #venueRules h3 { font-size: 16px !important; }
+        }
     </style>
 </head>
 <body>
+    <!-- 載入中畫面 -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">載入中...</div>
+    </div>
+
     <div class="container">
-        <div class="header">
-            <h1>─ 衡點 ─</h1>
-            <p>體驗課程預約</p>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
         </div>
 
-        <div class="steps" id="stepIndicator">
-            <div class="step active" data-step="1">1</div>
-            <div class="step-line" id="line1"></div>
-            <div class="step" data-step="2">2</div>
-            <div class="step-line" id="line2"></div>
-            <div class="step" data-step="3">3</div>
-        </div>
+        <div class="content">
+            <!-- Q1: 健身目標 -->
+            <div class="question-page active" data-page="1">
+                <h2>您的健身目標是什麼?<span class="required">*必填</span></h2>
+                <p class="subtitle">可複選多個目標</p>
+                <div class="option-group">
+                    <label class="option">
+                        <input type="checkbox" name="goal" value="減脂">
+                        <span>減脂</span>
+                    </label>
+                    <label class="option">
+                        <input type="checkbox" name="goal" value="增肌">
+                        <span>增肌</span>
+                    </label>
+                    <label class="option">
+                        <input type="checkbox" name="goal" value="改善體態">
+                        <span>改善體態</span>
+                    </label>
+                    <label class="option">
+                        <input type="checkbox" name="goal" value="改善痠痛/調整姿勢">
+                        <span>改善痠痛 / 調整姿勢</span>
+                    </label>
+                    <label class="option">
+                        <input type="checkbox" name="goal" value="術後/產後恢復">
+                        <span>術後 / 產後恢復</span>
+                    </label>
+                    <label class="option">
+                        <input type="checkbox" name="goal" value="日常健康維持">
+                        <span>日常健康維持</span>
+                    </label>
+                </div>
+                <div id="goalError" class="error-message" style="display: none;">請至少選擇一項健身目標</div>
+                <button class="button" onclick="nextPage()">下一步</button>
+            </div>
 
-        <div class="section active" id="loadingSection">
-            <div class="card">
-                <div class="loading-section">
-                    <div class="spinner" style="margin: 0 auto;"></div>
-                    <div class="loading-text" style="margin-top: 20px;">載入中...</div>
+            <!-- Q2: 課程偏好 -->
+            <div class="question-page" data-page="2">
+                <h2>您偏好的課程類型?<span class="required">*必填</span></h2>
+                <p class="subtitle">可複選多個課程</p>
+                <div class="option-group">
+                    <label class="option">
+                        <input type="checkbox" name="course" value="重量訓練">
+                        <span>重量訓練</span>
+                    </label>
+                    <label class="option">
+                        <input type="checkbox" name="course" value="器械皮拉提斯">
+                        <span>器械皮拉提斯</span>
+                    </label>
+                    <label class="option">
+                        <input type="checkbox" name="course" value="伸展課程">
+                        <span>伸展課程</span>
+                    </label>
+                </div>
+                <div id="courseError" class="error-message" style="display: none;">請至少選擇一項課程類型</div>
+                <div class="nav-buttons">
+                    <button class="button secondary" onclick="prevPage()">上一步</button>
+                    <button class="button" onclick="nextPage()">下一步</button>
                 </div>
             </div>
-        </div>
 
-        <div class="section" id="existingBookingSection">
-            <div class="card existing-booking-card">
-                <div class="card-title"><span class="icon">⏳</span>預約保留中</div>
-                <div class="summary-box existing-summary">
-                    <div class="summary-item"><span class="summary-label">課程類型</span><span class="summary-value" id="existingCourse">-</span></div>
-                    <div class="summary-item"><span class="summary-label">預約日期</span><span class="summary-value" id="existingDate">-</span></div>
-                    <div class="summary-item"><span class="summary-label">預約時段</span><span class="summary-value" id="existingTime">-</span></div>
+            <!-- Q3: 疾病史 -->
+            <div class="question-page" data-page="3">
+                <h2>疾病史 <span class="required">*必填</span></h2>
+                <p class="subtitle">請選擇所有與您健康史相關的疾病項目</p>
+                
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 25px;">
+                    <label class="option">
+                        <input type="checkbox" name="disease" value="心臟病">
+                        <span>心臟病</span>
+                    </label>
+                    <label class="option">
+                        <input type="checkbox" name="disease" value="心絞痛">
+                        <span>心絞痛</span>
+                    </label>
+                    <label class="option">
+                        <input type="checkbox" name="disease" value="糖尿病">
+                        <span>糖尿病</span>
+                    </label>
+                    <label class="option">
+                        <input type="checkbox" name="disease" value="疝氣/脫腸">
+                        <span>疝氣/脫腸</span>
+                    </label>
+                    <label class="option">
+                        <input type="checkbox" name="disease" value="高血壓">
+                        <span>高血壓</span>
+                    </label>
+                    <label class="option">
+                        <input type="checkbox" name="disease" value="氣喘">
+                        <span>氣喘</span>
+                    </label>
+                    <label class="option">
+                        <input type="checkbox" name="disease" value="貧血">
+                        <span>貧血</span>
+                    </label>
+                    <label class="option">
+                        <input type="checkbox" name="disease" value="癲癇">
+                        <span>癲癇</span>
+                    </label>
+                    <label class="option">
+                        <input type="checkbox" name="disease" value="甲狀腺問題">
+                        <span>甲狀腺問題</span>
+                    </label>
+                    <label class="option">
+                        <input type="checkbox" name="disease" value="靜脈瘤">
+                        <span>靜脈瘤</span>
+                    </label>
+                    <label class="option">
+                        <input type="checkbox" name="disease" value="惡性腫瘤">
+                        <span>惡性腫瘤</span>
+                    </label>
+                    <label class="option">
+                        <input type="checkbox" name="disease" value="椎間盤突出">
+                        <span>椎間盤突出</span>
+                    </label>
+                    <label class="option">
+                        <input type="checkbox" name="disease" value="習慣性脫臼">
+                        <span>習慣性脫臼</span>
+                    </label>
+                    <label class="option">
+                        <input type="checkbox" name="disease" value="脊椎滑脫">
+                        <span>脊椎滑脫</span>
+                    </label>
+                    <label class="option">
+                        <input type="checkbox" name="disease" value="骨質疏鬆症">
+                        <span>骨質疏鬆症</span>
+                    </label>
+                    <label class="option">
+                        <input type="checkbox" name="disease" value="痛風/風濕">
+                        <span>痛風/風濕</span>
+                    </label>
                 </div>
-                <div id="pendingPaymentSection" style="display: none;">
-                    <div class="payment-pending-pink">
-                        <div class="payment-pending-header"><span class="payment-pending-icon-small">✨</span><span class="payment-pending-title">即將完成預約</span></div>
-                        <div class="payment-pending-message">付款連結已傳送給您<br>完成付款後，行政人員將進行確認<br>並傳送預約完成資訊到您的 LINE<br>謝謝您，期待課程中與您相見！</div>
-                    </div>
-                    <button class="btn btn-payment" onclick="goToPayment()" style="margin-bottom: 15px;">📱 返回 LINE 完成付款</button>
-                </div>
-                <div id="confirmedSection" style="display: none;">
-                    <div class="confirmed-box"><div class="confirmed-icon">✅</div><div class="confirmed-title">預約已確認</div><div class="confirmed-message">我們將透過 LINE 通知您教練安排</div></div>
-                </div>
-                <div class="divider"></div>
-                <p style="color: var(--gray); font-size: 14px; line-height: 1.6; margin-bottom: 15px; text-align: center;">如需更換課程或時段，請先取消目前的預約</p>
-                <button class="btn btn-danger" onclick="showCancelModal()">❌ 取消預約</button>
-            </div>
-        </div>
 
-        <div class="section" id="step1Section">
-            <div class="card">
-                <div class="card-title"><span class="icon">📋</span>選擇體驗課程</div>
-                <div class="course-grid">
-                    <div class="course-card" data-course="ai" data-course-name="AI檢測" data-course-type="AI 3D體態分析">
-                        <span class="course-icon">🤖</span>
-                        <div class="course-name">AI檢測</div>
-                        <div class="course-duration">30-60分鐘</div>
-                        <div class="course-price">體驗價 1500元</div>
-                        <div class="course-note">期間限定：贈送一堂運動體驗課程</div>
-                    </div>
-                    <div class="course-card" data-course="pilates" data-course-name="皮拉提斯" data-course-type="皮拉提斯">
-                        <span class="course-icon">🧘</span>
-                        <div class="course-name">皮拉提斯</div>
-                        <div class="course-duration">45分鐘 (正課60分鐘)</div>
-                        <div class="course-price">體驗價 800元</div>
-                        <div class="course-note">&nbsp;</div>
-                    </div>
-                    <div class="course-card" data-course="weight" data-course-name="重訓健身課程" data-course-type="重訓教練">
-                        <span class="course-icon">💪</span>
-                        <div class="course-name">重訓健身課程</div>
-                        <div class="course-duration">45分鐘 (正課60分鐘)</div>
-                        <div class="course-price">體驗價 500元</div>
-                        <div class="course-note">&nbsp;</div>
-                    </div>
-                    <div class="course-card" data-course="stretch" data-course-name="肌肉賦能伸展" data-course-type="肌肉賦能伸展">
-                        <span class="course-icon">🤸</span>
-                        <div class="course-name">肌肉賦能伸展</div>
-                        <div class="course-duration">30分鐘 (正課60/80分鐘)</div>
-                        <div class="course-price">首次體驗 500元</div>
-                        <div class="course-note">*此項非運動體驗課程</div>
-                    </div>
+                <div class="option-group">
+                    <label class="option" style="flex-direction: column; align-items: flex-start;">
+                        <div style="display: flex; align-items: center; gap: 12px; width: 100%;">
+                            <input type="checkbox" name="disease" value="關節問題" id="jointIssue">
+                            <span>關節問題</span>
+                        </div>
+                        <input type="text" class="text-input detail-input" id="jointDetail" placeholder="例如:右膝關節疼痛3個月" style="display: none; width: 100%;">
+                    </label>
+                    <label class="option" style="flex-direction: column; align-items: flex-start;">
+                        <div style="display: flex; align-items: center; gap: 12px; width: 100%;">
+                            <input type="checkbox" name="disease" value="脊椎問題" id="spineIssue">
+                            <span>脊椎問題</span>
+                        </div>
+                        <input type="text" class="text-input detail-input" id="spineDetail" placeholder="例如:腰椎輕微突出" style="display: none; width: 100%;">
+                    </label>
+                    <label class="option" style="flex-direction: column; align-items: flex-start;">
+                        <div style="display: flex; align-items: center; gap: 12px; width: 100%;">
+                            <input type="checkbox" name="disease" value="其他" id="otherDisease">
+                            <span>其他</span>
+                        </div>
+                        <input type="text" class="text-input detail-input" id="otherDetail" placeholder="例如:偏頭痛、鼻炎等" style="display: none; width: 100%;">
+                    </label>
+                    <label class="option">
+                        <input type="checkbox" name="disease" value="無" id="noDisease">
+                        <span>無</span>
+                    </label>
                 </div>
-                <div class="rules-box">
-                    <div class="rules-title">📌 體驗規範</div>
-                    <ul class="rules-list">
-                        <li>一、尚未購買過正課的顧客可用體驗價，選擇一種課程體驗一次。</li>
-                        <li>二、課卡購買後30日內需使用完畢，逾期不補。</li>
-                        <li>三、館內已購買正課的學員，可用體驗價預約尚未體驗過的課程各一次。</li>
-                    </ul>
-                </div>
-                <div class="btn-group" style="margin-top: 15px;">
-                    <button class="btn btn-primary" id="step1Next" disabled onclick="goToStep(2)">下一步 →</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="section" id="step2Section">
-            <div class="card">
-                <div class="card-title"><span class="icon">📅</span>選擇日期與時段</div>
-                <p style="font-size: 12px; color: var(--pink-dark); margin-bottom: 15px;">⚠️ 自助預約功能不提供當日臨時預約</p>
-                <div class="calendar">
-                    <div class="calendar-header">
-                        <button class="calendar-nav" id="prevMonth" onclick="changeMonth(-1)">‹</button>
-                        <div class="calendar-title" id="calendarTitle">2024年12月</div>
-                        <button class="calendar-nav" id="nextMonth" onclick="changeMonth(1)">›</button>
-                    </div>
-                    <div class="calendar-weekdays">
-                        <div class="calendar-weekday weekend">日</div>
-                        <div class="calendar-weekday">一</div>
-                        <div class="calendar-weekday">二</div>
-                        <div class="calendar-weekday">三</div>
-                        <div class="calendar-weekday">四</div>
-                        <div class="calendar-weekday">五</div>
-                        <div class="calendar-weekday weekend">六</div>
-                    </div>
-                    <div class="calendar-days" id="calendarDays"></div>
-                </div>
-                <div class="selected-date-display" id="selectedDateDisplay">
-                    <span class="selected-date-text" id="selectedDateText">已選擇：12月5日 (四)</span>
-                </div>
-                <div class="time-slots-section" id="timeSlotsSection">
-                    <div class="time-slots-title"><span>⏰</span>可預約時段</div>
-                    <div id="timeSlotsContainer"></div>
-                </div>
-            </div>
-            <div class="card" style="padding: 15px 25px;">
-                <div class="btn-group" style="margin: 0;">
-                    <button class="btn btn-secondary" onclick="goToStep(1)">← 上一步</button>
-                    <button class="btn btn-primary" id="step2Next" disabled onclick="goToStep(3)">下一步 →</button>
+                <div id="diseaseError" class="error-message" style="display: none;">請至少選擇一項</div>
+                <div class="nav-buttons">
+                    <button class="button secondary" onclick="prevPage()">上一步</button>
+                    <button class="button" onclick="nextPage()">下一步</button>
                 </div>
             </div>
-        </div>
 
-        <div class="section" id="step3Section">
-            <div class="card confirm-card">
-                <div class="card-title"><span class="icon">✅</span>確認預約資訊</div>
-                <div class="summary-box confirm-summary">
-                    <div class="summary-item"><span class="summary-label">課程類型</span><span class="summary-value" id="confirmCourse">-</span></div>
-                    <div class="summary-item"><span class="summary-label">預約日期</span><span class="summary-value" id="confirmDate">-</span></div>
-                    <div class="summary-item"><span class="summary-label">預約時段</span><span class="summary-value" id="confirmTime">-</span></div>
-                </div>
-                <div class="notice confirm-notice">
-                    <p>📌 確認預約後，付款連結將發送至您的 LINE。<br>請於 12 小時內完成付款，逾時將自動釋出名額。</p>
-                </div>
-                <div class="btn-group">
-                    <button class="btn btn-secondary" onclick="goToStep(2)">← 修改</button>
-                    <button class="btn btn-confirm" id="confirmBtn" onclick="confirmBooking()">確認預約</button>
+            <!-- Q4: 備註 -->
+            <div class="question-page" data-page="4">
+                <h2>備註</h2>
+                <p class="subtitle">其他想告訴我們的資訊</p>
+                <textarea class="text-input" id="remarks" rows="6" placeholder="疾病或受傷史、時間長度、生活習慣、醫生建議"></textarea>
+                <div class="nav-buttons">
+                    <button class="button secondary" onclick="prevPage()">上一步</button>
+                    <button class="button" onclick="nextPage()">下一步</button>
                 </div>
             </div>
-        </div>
 
-        <div class="section" id="successSection">
-            <div class="card">
-                <div class="success-container-compact">
-                    <div class="success-header"><span class="success-icon-small">🎊</span><span class="success-title">預約保留中！</span></div>
-                    <div class="success-message">付款連結已發送至您的 LINE<br>請於 <strong>12 小時內</strong> 完成付款<br><span id="paymentDeadline" style="color: var(--pink-dark); font-weight: 600;"></span></div>
-                    <div class="reserved-info">
-                        <div class="reserved-item"><span class="reserved-label">課程</span><span class="reserved-value" id="reservedCourse">-</span></div>
-                        <div class="reserved-item"><span class="reserved-label">日期</span><span class="reserved-value" id="reservedDate">-</span></div>
-                        <div class="reserved-item"><span class="reserved-label">時段</span><span class="reserved-value" id="reservedTime">-</span></div>
+            <!-- Q5: 基本資料 -->
+            <div class="question-page" data-page="5">
+                <h2>基本資料 <span class="required">*必填</span></h2>
+                <p class="subtitle">請填寫您的基本資料</p>
+                
+                <div class="basic-info-grid">
+                    <div class="edit-field full-width">
+                        <label>姓名 <span class="required">*</span></label>
+                        <input type="text" id="name" class="text-input" placeholder="請輸入您的姓名">
                     </div>
-                    <div class="warning-box"><p>⚠️ 逾時將自動釋出名額<br>請勿再操作結帳</p></div>
-                    <button class="btn btn-primary" onclick="closeLiff()">關閉視窗</button>
+                    
+                    <div class="edit-field full-width">
+                        <label>生日 <span class="required">*</span></label>
+                        <div style="display: flex; gap: 8px;">
+                            <select id="birthdayYear" class="text-input" style="flex: 1;">
+                                <option value="">年</option>
+                            </select>
+                            <select id="birthdayMonth" class="text-input" style="flex: 1;">
+                                <option value="">月</option>
+                            </select>
+                            <select id="birthdayDay" class="text-input" style="flex: 1;">
+                                <option value="">日</option>
+                            </select>
+                        </div>
+                        <input type="date" id="birthday" style="display: none;">
+                    </div>
+                    
+                    <div class="edit-field full-width">
+                        <label>性別 <span class="required">*</span></label>
+                        <div style="display: flex; gap: 10px;">
+                            <label class="option" style="flex: 1; margin: 0;">
+                                <input type="radio" name="genderSelect" value="男">
+                                <span>男</span>
+                            </label>
+                            <label class="option" style="flex: 1; margin: 0;">
+                                <input type="radio" name="genderSelect" value="女">
+                                <span>女</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="edit-field full-width">
+                        <label>電子信箱 <span class="required">*</span></label>
+                        <div style="position: relative;">
+                            <input type="email" id="email" class="text-input" placeholder="example@gmail.com">
+                            <div id="emailDomainSuggestions" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 2px solid #e2ede6; border-top: none; border-radius: 0 0 8px 8px; z-index: 10; max-height: 200px; overflow-y: auto;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="edit-field full-width">
+                        <label>電話 <span class="required">*</span></label>
+                        <input type="tel" id="phone" class="text-input" placeholder="09xxxxxxxx" maxlength="10">
+                    </div>
+                </div>
+                
+                <div id="basicInfoError" class="error-message" style="display: none;"></div>
+                <div class="nav-buttons">
+                    <button class="button secondary" onclick="prevPage()">上一步</button>
+                    <button class="button" onclick="nextPage()">下一步</button>
+                </div>
+            </div>
+
+            <!-- Q6: 上課時段 -->
+            <div class="question-page" data-page="6">
+                <h2>方便固定上課時段區間</h2>
+                <p class="subtitle">💡 我們會盡可能依照您的時間需求安排,時段範圍可超過範例時間</p>
+                <div class="option-group">
+                    <label class="option">
+                        <input type="checkbox" name="timeSlot" value="平日白天" id="weekdayDay">
+                        <span>平日白天</span>
+                    </label>
+                    <input type="text" class="text-input" id="weekdayDayTime" placeholder="例:09:00-17:00 *必填" style="display: none; margin-top: -5px;">
+                    
+                    <label class="option">
+                        <input type="checkbox" name="timeSlot" value="平日晚上(尖峰)" id="weekdayNight">
+                        <span>平日晚上(尖峰)</span>
+                    </label>
+                    <input type="text" class="text-input" id="weekdayNightTime" placeholder="例:18:00-21:00 *必填" style="display: none; margin-top: -5px;">
+                    
+                    <label class="option">
+                        <input type="checkbox" name="timeSlot" value="假日白天(尖峰)" id="weekendDay">
+                        <span>假日白天(尖峰)</span>
+                    </label>
+                    <input type="text" class="text-input" id="weekendDayTime" placeholder="例:09:00-17:00 *必填" style="display: none; margin-top: -5px;">
+                    
+                    <label class="option">
+                        <input type="checkbox" name="timeSlot" value="假日晚上" id="weekendNight">
+                        <span>假日晚上</span>
+                    </label>
+                    <input type="text" class="text-input" id="weekendNightTime" placeholder="例:18:00-21:00 *必填" style="display: none; margin-top: -5px;">
+                    
+                    <label class="option">
+                        <input type="checkbox" name="timeSlot" value="彈性不固定">
+                        <span>彈性不固定</span>
+                    </label>
+                </div>
+                <div id="timeSlotError" class="error-message" style="display: none;"></div>
+                <div class="nav-buttons">
+                    <button class="button secondary" onclick="prevPage()">上一步</button>
+                    <button class="button" onclick="nextPage()">下一步</button>
+                </div>
+            </div>
+
+            <!-- Q7: 資料確認 -->
+            <div class="question-page" data-page="7">
+                <h2>資料確認</h2>
+                <p class="subtitle">請確認所有資料正確,點擊「修改」按鈕可編輯</p>
+                
+                <div class="editable-section">
+                    <button class="edit-button" onclick="toggleEdit('basic')">修改</button>
+                    <h3>基本資料</h3>
+                    <div class="edit-field">
+                        <label>姓名 <span class="required">*</span></label>
+                        <input type="text" id="edit_name" class="text-input" disabled>
+                    </div>
+                    <div class="edit-field">
+                        <label>生日 <span class="required">*</span></label>
+                        <input type="date" id="edit_birthday" class="text-input" disabled>
+                    </div>
+                    <div class="edit-field">
+                        <label>性別 <span class="required">*</span></label>
+                        <div style="display: flex; gap: 10px;">
+                            <label class="option" style="flex: 1; margin: 0;">
+                                <input type="radio" name="editGenderSelect" value="男" disabled>
+                                <span>男</span>
+                            </label>
+                            <label class="option" style="flex: 1; margin: 0;">
+                                <input type="radio" name="editGenderSelect" value="女" disabled>
+                                <span>女</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="edit-field">
+                        <label>電子信箱 <span class="required">*</span></label>
+                        <input type="email" id="edit_email" class="text-input" disabled>
+                    </div>
+                    <div class="edit-field">
+                        <label>電話 <span class="required">*</span></label>
+                        <input type="tel" id="edit_phone" class="text-input" maxlength="10" disabled>
+                    </div>
+                </div>
+
+                <div class="editable-section">
+                    <button class="edit-button" onclick="toggleEdit('fitness')">修改</button>
+                    <h3>健身資訊</h3>
+                    <div class="edit-field">
+                        <label>健身目標</label>
+                        <div id="edit_goals_display" style="color: #5f846f; padding: 10px; background: #f8faf9; border-radius: 8px; line-height: 1.8;"></div>
+                        <div id="edit_goals_container" style="display: none;">
+                            <select id="edit_goals" class="text-input" multiple size="6" style="height: auto;">
+                                <option value="減脂">減脂</option>
+                                <option value="增肌">增肌</option>
+                                <option value="改善體態">改善體態</option>
+                                <option value="改善痠痛/調整姿勢">改善痠痛/調整姿勢</option>
+                                <option value="術後/產後恢復">術後/產後恢復</option>
+                                <option value="日常健康維持">日常健康維持</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="edit-field">
+                        <label>課程偏好</label>
+                        <div id="edit_course_display" style="color: #5f846f; padding: 10px; background: #f8faf9; border-radius: 8px; line-height: 1.8;"></div>
+                        <div id="edit_course_container" style="display: none;">
+                            <select id="edit_course" class="text-input" multiple size="3" style="height: auto;">
+                                <option value="重量訓練">重量訓練</option>
+                                <option value="器械皮拉提斯">器械皮拉提斯</option>
+                                <option value="伸展課程">伸展課程</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="edit-field">
+                        <label>疾病史</label>
+                        <div id="edit_diseases_display" style="color: #5f846f; padding: 10px; background: #f8faf9; border-radius: 8px; line-height: 1.8;"></div>
+                    </div>
+                    <div class="edit-field">
+                        <label>備註</label>
+                        <textarea id="edit_remarks" class="text-input" rows="3" disabled></textarea>
+                    </div>
+                </div>
+
+                <div class="editable-section">
+                    <h3>上課時段偏好</h3>
+                    <div id="edit_time_preferences"></div>
+                </div>
+
+                <div id="editError" class="error-message" style="display: none;"></div>
+                <div class="nav-buttons">
+                    <button class="button secondary" onclick="prevPage()">上一步</button>
+                    <button class="button" onclick="saveEditedData()">確認無誤,繼續</button>
+                </div>
+            </div>
+
+            <!-- Q8: 場館規範 -->
+            <div class="question-page" data-page="8">
+                <h2>場館規範同意書</h2>
+                <p class="subtitle">請詳閱場館規範並同意後才能完成預約</p>
+                <div style="background: #ffffff; border: 2px solid #ffe8e8; border-radius: 12px; padding: 20px; margin-bottom: 20px; max-height: 500px; overflow-y: auto;" id="venueRules">
+                    載入中...
+                </div>
+                <label style="display: flex; align-items: flex-start; gap: 12px; padding: 16px; background: #f5f5f5; border-radius: 8px; cursor: not-allowed; margin-bottom: 20px; opacity: 0.6;" id="agreeRulesLabel">
+                    <input type="checkbox" id="agreeRules" style="margin-top: 3px; min-width: 20px; min-height: 20px; accent-color: #2d5a3d;" disabled>
+                    <span>我已詳閱並同意遵守以上場館規範</span>
+                </label>
+                <div id="rulesError" class="error-message" style="display: none;">請勾選同意場館規範</div>
+                <div class="nav-buttons-three">
+                    <button class="button secondary" onclick="prevPage()">上一步</button>
+                    <div class="button-row">
+                        <button class="button warning" onclick="submitFormLater()">稍後預約體驗</button>
+                        <button class="button" onclick="submitFormNow()">馬上預約體驗</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 完成頁面 -->
+            <div class="question-page" data-page="9">
+                <div class="completion-modern">
+                    <div class="completion-icon-wrapper">
+                        <div class="completion-icon-bg">
+                            <div class="completion-icon">✓</div>
+                        </div>
+                    </div>
+
+                    <h1 class="completion-title">提交成功！</h1>
+                    <p class="completion-subtitle">感謝您完成問卷填寫<br>我們已收到您的資料</p>
+
+                    <div class="completion-info-cards">
+                        <div class="completion-info-card">
+                            <div class="completion-info-icon">💬</div>
+                            <div class="completion-info-title">LINE 訊息通知</div>
+                            <div class="completion-info-text">官方將透過 LINE 傳送預約相關資訊</div>
+                        </div>
+                    </div>
+
+                    <div class="completion-reminder">
+                        <div class="completion-reminder-title">
+                            <span>💡</span>
+                            <span>溫馨提醒</span>
+                        </div>
+                        <p class="completion-reminder-text">
+                            • 如有任何問題,請透過官方LINE洽詢<br>
+                            • 我們將盡快與您聯繫
+                        </p>
+                    </div>
+
+                    <div class="completion-book-button" id="bookNowButtonContainer" style="display: none;">
+                        <button class="button" onclick="goToBooking()">馬上預約體驗</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="modal-overlay" id="cancelModal">
-        <div class="modal">
-            <div class="modal-icon">🤔</div>
-            <div class="modal-title">確定要取消預約嗎？</div>
-            <div class="modal-message">取消後您可以重新預約其他時段或課程。</div>
-            <div class="btn-group">
-                <button class="btn btn-secondary" onclick="hideCancelModal()">再想想</button>
-                <button class="btn btn-danger" onclick="cancelBooking()">確定取消</button>
-            </div>
-        </div>
-    </div>
+    <input type="hidden" id="lineId" value="">
 
     <script>
-        const CONFIG = {
-            LIFF_ID: '2008660081-5A92onj7',
-            WEBHOOK_URL: 'https://hook.us2.make.com/fpz9ihnccpnlh65xc7p6q1lnrreeqhaf',
-            PAYMENT_URLS: { 'ai': '', 'pilates': '', 'weight': '', 'stretch': '' }
+        const WEBHOOK_URL = 'https://hook.us2.make.com/6rfz9vsjnqqxr6s6bnx2cr9njax93yyg';
+
+        let currentPage = 1;
+        const totalPages = 9;
+        let formData = {};
+        let editingSections = {
+            basic: false,
+            fitness: false
         };
 
-        let userId = null;
-        let currentStep = 1;
-        let selectedCourse = null;
-        let selectedDate = null;
-        let selectedTime = null;
-        let existingBooking = null;
-        let isSubmitting = false;
-        
-        let currentYear = new Date().getFullYear();
-        let currentMonth = new Date().getMonth();
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        document.addEventListener('DOMContentLoaded', function() { initializePage(); });
-
-        async function initializePage() {
+        async function initializeLiff() {
             try {
-                if (CONFIG.LIFF_ID) {
-                    await liff.init({ liffId: CONFIG.LIFF_ID });
-                    if (liff.isLoggedIn()) {
-                        const profile = await liff.getProfile();
-                        userId = profile.userId;
-                    } else {
-                        liff.login();
-                        return;
-                    }
-                } else {
-                    userId = 'test_user_' + Date.now();
+                await liff.init({ liffId: '2007947083-kGa5bdRl' });
+                
+                if (!liff.isLoggedIn()) {
+                    liff.login();
+                    return;
                 }
-                await checkExistingBooking();
+                
+                const profile = await liff.getProfile();
+                const lineId = profile.userId;
+                const displayName = profile.displayName;
+                
+                document.getElementById('lineId').value = lineId;
+                formData.lineId = lineId;
+                formData.displayName = displayName;
+                
+                await checkUserSubmitted(lineId);
+                
             } catch (error) {
-                console.error('Initialize failed:', error);
-                userId = 'test_user_' + Date.now();
-                showBookingFlow();
+                console.error('LIFF initialization failed:', error);
+                hideLoading();
             }
         }
 
-        async function checkExistingBooking() {
+        async function checkUserSubmitted(lineId) {
             try {
-                const response = await fetch(CONFIG.WEBHOOK_URL, {
+                const response = await fetch(WEBHOOK_URL, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'checkBooking', userId: userId })
-                });
-                const text = await response.text();
-                let data;
-                try { data = JSON.parse(text); } catch (e) { showBookingFlow(); return; }
-                if (data.hasBooking && data.booking) {
-                    existingBooking = data.booking;
-                    showExistingBookingPage(data.booking);
-                } else { showBookingFlow(); }
-            } catch (error) { showBookingFlow(); }
-        }
-
-        function showExistingBookingPage(booking) {
-            document.getElementById('existingCourse').textContent = booking.courseName || '-';
-            document.getElementById('existingDate').textContent = booking.date ? formatDisplayDate(booking.date) : '-';
-            document.getElementById('existingTime').textContent = booking.startTime && booking.endTime ? `${booking.startTime} - ${booking.endTime}` : '-';
-            const pendingSection = document.getElementById('pendingPaymentSection');
-            const confirmedSection = document.getElementById('confirmedSection');
-            if (booking.status === '保留中' || booking.status === '待付款' || booking.status === 'pending') {
-                pendingSection.style.display = 'block';
-                confirmedSection.style.display = 'none';
-            } else {
-                pendingSection.style.display = 'none';
-                confirmedSection.style.display = 'block';
-            }
-            document.getElementById('stepIndicator').style.display = 'none';
-            showSection('existingBookingSection');
-        }
-
-        function showBookingFlow() {
-            document.getElementById('stepIndicator').style.display = 'flex';
-            showSection('step1Section');
-            updateStepIndicator(1);
-        }
-
-        document.querySelectorAll('.course-card').forEach(card => {
-            card.addEventListener('click', function() {
-                document.querySelectorAll('.course-card').forEach(c => c.classList.remove('selected'));
-                this.classList.add('selected');
-                selectedCourse = { id: this.dataset.course, name: this.dataset.courseName, type: this.dataset.courseType };
-                selectedDate = null;
-                selectedTime = null;
-                document.getElementById('step1Next').disabled = false;
-            });
-        });
-
-        function renderCalendar() {
-            const calendarDays = document.getElementById('calendarDays');
-            const calendarTitle = document.getElementById('calendarTitle');
-            calendarTitle.textContent = `${currentYear}年${currentMonth + 1}月`;
-            const firstDay = new Date(currentYear, currentMonth, 1);
-            const lastDay = new Date(currentYear, currentMonth + 1, 0);
-            const startWeekday = firstDay.getDay();
-            const totalDays = lastDay.getDate();
-            calendarDays.innerHTML = '';
-            for (let i = 0; i < startWeekday; i++) {
-                const emptyDiv = document.createElement('div');
-                emptyDiv.className = 'calendar-day empty';
-                calendarDays.appendChild(emptyDiv);
-            }
-            for (let day = 1; day <= totalDays; day++) {
-                const dateObj = new Date(currentYear, currentMonth, day);
-                const dateStr = formatDate(dateObj);
-                const dayDiv = document.createElement('div');
-                dayDiv.className = 'calendar-day';
-                dayDiv.textContent = day;
-                dayDiv.dataset.date = dateStr;
-                if (dateObj.getTime() === today.getTime()) { dayDiv.classList.add('today'); }
-                if (dateObj <= today) {
-                    dayDiv.classList.add('disabled');
-                } else {
-                    if (selectedDate === dateStr) { dayDiv.classList.add('selected'); }
-                    dayDiv.addEventListener('click', () => selectDate(dateStr, dayDiv));
-                }
-                calendarDays.appendChild(dayDiv);
-            }
-            updateNavButtons();
-        }
-
-        function changeMonth(delta) {
-            currentMonth += delta;
-            if (currentMonth > 11) { currentMonth = 0; currentYear++; }
-            else if (currentMonth < 0) { currentMonth = 11; currentYear--; }
-            renderCalendar();
-        }
-
-        function updateNavButtons() {
-            const prevBtn = document.getElementById('prevMonth');
-            const todayMonth = today.getMonth();
-            const todayYear = today.getFullYear();
-            prevBtn.disabled = (currentYear === todayYear && currentMonth <= todayMonth);
-            const maxMonth = todayMonth + 1;
-            const maxYear = todayYear + Math.floor(maxMonth / 12);
-            const adjustedMaxMonth = maxMonth % 12;
-            const nextBtn = document.getElementById('nextMonth');
-            nextBtn.disabled = (currentYear > maxYear || (currentYear === maxYear && currentMonth >= adjustedMaxMonth));
-        }
-
-        function selectDate(dateStr, dayElement) {
-            document.querySelectorAll('.calendar-day.selected').forEach(d => d.classList.remove('selected'));
-            dayElement.classList.add('selected');
-            selectedDate = dateStr;
-            selectedTime = null;
-            document.getElementById('step2Next').disabled = true;
-            const dateObj = new Date(dateStr);
-            const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
-            document.getElementById('selectedDateText').textContent = `已選擇：${dateObj.getMonth() + 1}月${dateObj.getDate()}日 (${weekdays[dateObj.getDay()]})`;
-            document.getElementById('selectedDateDisplay').classList.add('show');
-            loadTimeSlots(dateStr);
-        }
-
-        async function loadTimeSlots(dateStr) {
-            const section = document.getElementById('timeSlotsSection');
-            const container = document.getElementById('timeSlotsContainer');
-            section.classList.add('show');
-            container.innerHTML = '<div class="loading"><div class="spinner"></div><div class="loading-text">載入可預約時段...</div></div>';
-            try {
-                const response = await fetch(CONFIG.WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'getAvailableSlots', courseType: selectedCourse.type, date: dateStr })
-                });
-                const text = await response.text();
-                let data;
-                try { data = JSON.parse(text); } catch (e) { showNoSlots(); return; }
-                if (data.slots && Array.isArray(data.slots) && data.slots.length > 0) {
-                    const validSlots = data.slots.filter(slot => slot && slot.startTime && slot.endTime);
-                    if (validSlots.length > 0) { displayTimeSlots(validSlots); }
-                    else { showNoSlots(); }
-                } else { showNoSlots(); }
-            } catch (error) { showNoSlots(); }
-        }
-
-        function displayTimeSlots(slots) {
-            const container = document.getElementById('timeSlotsContainer');
-            container.innerHTML = '<div class="time-slots"></div>';
-            const slotsContainer = container.querySelector('.time-slots');
-            const uniqueSlots = [];
-            const seenTimes = new Set();
-            slots.forEach(slot => {
-                if (!slot || !slot.startTime || !slot.endTime) return;
-                const timeKey = `${slot.startTime}-${slot.endTime}`;
-                if (!seenTimes.has(timeKey)) {
-                    seenTimes.add(timeKey);
-                    uniqueSlots.push(slot);
-                }
-            });
-            if (uniqueSlots.length === 0) { showNoSlots(); return; }
-            uniqueSlots.sort((a, b) => a.startTime.localeCompare(b.startTime));
-            uniqueSlots.forEach(slot => {
-                const div = document.createElement('div');
-                div.className = 'time-slot';
-                div.dataset.start = slot.startTime;
-                div.dataset.end = slot.endTime;
-                div.innerHTML = `<div class="time-slot-time">${slot.startTime}</div>`;
-                div.addEventListener('click', () => selectTimeSlot(slot, div));
-                slotsContainer.appendChild(div);
-            });
-        }
-
-        function showNoSlots() {
-            const container = document.getElementById('timeSlotsContainer');
-            container.innerHTML = '<div class="empty-state"><div class="icon">😢</div><p>無可預約的時段<br>請選擇其他日期</p></div>';
-        }
-
-        function selectTimeSlot(slot, element) {
-            document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
-            element.classList.add('selected');
-            selectedTime = { startTime: slot.startTime, endTime: slot.endTime };
-            document.getElementById('step2Next').disabled = false;
-        }
-
-        function goToStep(step) {
-            if (step === 2 && !selectedCourse) { alert('請選擇課程'); return; }
-            if (step === 3) {
-                if (!selectedDate) { alert('請選擇日期'); return; }
-                if (!selectedTime) { alert('請選擇時段'); return; }
-                updateConfirmation();
-            }
-            currentStep = step;
-            if (step === 2) {
-                currentYear = today.getFullYear();
-                currentMonth = today.getMonth();
-                renderCalendar();
-                document.getElementById('selectedDateDisplay').classList.remove('show');
-                document.getElementById('timeSlotsSection').classList.remove('show');
-            }
-            showSection(`step${step}Section`);
-            updateStepIndicator(step);
-        }
-
-        function showSection(sectionId) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.getElementById(sectionId).classList.add('active');
-        }
-
-        function updateStepIndicator(step) {
-            document.querySelectorAll('.step').forEach((s, index) => {
-                s.classList.remove('active', 'completed');
-                if (index + 1 < step) { s.classList.add('completed'); }
-                else if (index + 1 === step) { s.classList.add('active'); }
-            });
-            for (let i = 1; i <= 2; i++) {
-                const line = document.getElementById(`line${i}`);
-                if (line) { line.classList.toggle('completed', i < step); }
-            }
-        }
-
-        function updateConfirmation() {
-            document.getElementById('confirmCourse').textContent = selectedCourse.name;
-            document.getElementById('confirmDate').textContent = formatDisplayDate(selectedDate);
-            document.getElementById('confirmTime').textContent = `${selectedTime.startTime} - ${selectedTime.endTime}`;
-        }
-
-        async function confirmBooking() {
-            if (isSubmitting) { return; }
-            isSubmitting = true;
-            const confirmBtn = document.getElementById('confirmBtn');
-            confirmBtn.disabled = true;
-            confirmBtn.innerHTML = '<div class="spinner" style="width:20px;height:20px;border-width:2px;"></div> 處理中...';
-            try {
-                const response = await fetch(CONFIG.WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        action: 'createBooking',
-                        userId: userId,
-                        courseId: selectedCourse.id,
-                        courseName: selectedCourse.name,
-                        courseType: selectedCourse.type,
-                        date: selectedDate,
-                        startTime: selectedTime.startTime,
-                        endTime: selectedTime.endTime,
-                        timestamp: new Date().toISOString()
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        action: 'check',
+                        lineId: lineId 
                     })
                 });
-                const text = await response.text();
-                let result;
-                try { result = JSON.parse(text); } catch (e) { throw new Error('系統設定中，請稍後再試'); }
-                if (result.success) { showSuccess(); }
-                else { throw new Error(result.message || '預約失敗'); }
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    
+                    if (result.submitted === true || result.submitted === 'true') {
+                        document.querySelectorAll('.question-page').forEach(function(page) {
+                            page.classList.remove('active');
+                        });
+                        currentPage = 9;
+                        document.querySelector('[data-page="9"]').classList.add('active');
+                        document.getElementById('bookNowButtonContainer').style.display = 'block';
+                        updateProgress();
+                    }
+                }
+                
+                hideLoading();
+                
             } catch (error) {
-                alert('預約失敗：' + error.message);
-                confirmBtn.disabled = false;
-                confirmBtn.innerHTML = '確認預約';
-                isSubmitting = false;
+                console.error('檢查用戶狀態失敗:', error);
+                hideLoading();
             }
         }
 
-        function goToPayment() {
-            if (liff.isInClient()) { liff.closeWindow(); }
-            else { alert('請從 LINE 訊息中的連結完成付款'); }
+        function hideLoading() {
+            var loadingOverlay = document.getElementById('loadingOverlay');
+            if (loadingOverlay) {
+                loadingOverlay.style.display = 'none';
+            }
         }
 
-        function showSuccess() {
-            const deadline = new Date();
-            deadline.setHours(deadline.getHours() + 12);
-            const deadlineStr = `${deadline.getFullYear()}/${(deadline.getMonth() + 1).toString().padStart(2, '0')}/${deadline.getDate().toString().padStart(2, '0')} ${deadline.getHours().toString().padStart(2, '0')}:${deadline.getMinutes().toString().padStart(2, '0')}`;
-            document.getElementById('paymentDeadline').textContent = `期限至 ${deadlineStr}`;
-            document.getElementById('reservedCourse').textContent = selectedCourse.name;
-            document.getElementById('reservedDate').textContent = formatDisplayDate(selectedDate);
-            document.getElementById('reservedTime').textContent = `${selectedTime.startTime} - ${selectedTime.endTime}`;
-            document.getElementById('stepIndicator').style.display = 'none';
-            showSection('successSection');
-        }
-
-        function showCancelModal() { document.getElementById('cancelModal').classList.add('active'); }
-        function hideCancelModal() { document.getElementById('cancelModal').classList.remove('active'); }
-
-        async function cancelBooking() {
-            const cancelBtn = document.querySelector('#cancelModal .btn-danger');
-            cancelBtn.disabled = true;
-            cancelBtn.textContent = '取消中...';
+        function saveFormDataToStorage() {
             try {
-                const response = await fetch(CONFIG.WEBHOOK_URL, {
+                var dataToSave = {
+                    formData: formData,
+                    currentPage: currentPage,
+                    timestamp: new Date().toISOString()
+                };
+                localStorage.setItem('fitnessFormData', JSON.stringify(dataToSave));
+            } catch (e) {
+                console.error('無法儲存資料:', e);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeLiff();
+            updateProgress();
+            initializeDateInputs();
+            initializeDiseaseCheckboxes();
+            initializeTimeSlotCheckboxes();
+            loadVenueRules();
+            setupPhoneInput();
+            setupEmailInput();
+            setupGenderInput();
+        });
+
+        function initializeDateInputs() {
+            var today = new Date();
+            
+            var yearSelect = document.getElementById('birthdayYear');
+            var currentYear = today.getFullYear();
+            for (var year = currentYear; year >= currentYear - 100; year--) {
+                var option = document.createElement('option');
+                option.value = year;
+                option.textContent = year + ' 年';
+                yearSelect.appendChild(option);
+            }
+            
+            var monthSelect = document.getElementById('birthdayMonth');
+            for (var month = 1; month <= 12; month++) {
+                var option = document.createElement('option');
+                option.value = month.toString().padStart(2, '0');
+                option.textContent = month + ' 月';
+                monthSelect.appendChild(option);
+            }
+            
+            updateDayOptions();
+            
+            yearSelect.addEventListener('change', updateDayOptions);
+            monthSelect.addEventListener('change', updateDayOptions);
+            yearSelect.addEventListener('change', updateHiddenDate);
+            monthSelect.addEventListener('change', updateHiddenDate);
+            document.getElementById('birthdayDay').addEventListener('change', updateHiddenDate);
+        }
+        
+        function updateDayOptions() {
+            var yearSelect = document.getElementById('birthdayYear');
+            var monthSelect = document.getElementById('birthdayMonth');
+            var daySelect = document.getElementById('birthdayDay');
+            
+            var year = parseInt(yearSelect.value);
+            var month = parseInt(monthSelect.value);
+            
+            daySelect.innerHTML = '<option value="">日</option>';
+            
+            if (!year || !month) return;
+            
+            var daysInMonth = new Date(year, month, 0).getDate();
+            
+            for (var day = 1; day <= daysInMonth; day++) {
+                var option = document.createElement('option');
+                option.value = day.toString().padStart(2, '0');
+                option.textContent = day + ' 日';
+                daySelect.appendChild(option);
+            }
+        }
+        
+        function updateHiddenDate() {
+            var year = document.getElementById('birthdayYear').value;
+            var month = document.getElementById('birthdayMonth').value;
+            var day = document.getElementById('birthdayDay').value;
+            
+            if (year && month && day) {
+                var dateStr = year + '-' + month + '-' + day;
+                document.getElementById('birthday').value = dateStr;
+            }
+        }
+
+        function initializeDiseaseCheckboxes() {
+            var jointCheckbox = document.getElementById('jointIssue');
+            var spineCheckbox = document.getElementById('spineIssue');
+            var otherCheckbox = document.getElementById('otherDisease');
+            var noDiseaseCheckbox = document.getElementById('noDisease');
+            var jointDetail = document.getElementById('jointDetail');
+            var spineDetail = document.getElementById('spineDetail');
+            var otherDetail = document.getElementById('otherDetail');
+
+            jointCheckbox.addEventListener('change', function() {
+                jointDetail.style.display = this.checked ? 'block' : 'none';
+                if (!this.checked) jointDetail.value = '';
+            });
+
+            spineCheckbox.addEventListener('change', function() {
+                spineDetail.style.display = this.checked ? 'block' : 'none';
+                if (!this.checked) spineDetail.value = '';
+            });
+
+            otherCheckbox.addEventListener('change', function() {
+                otherDetail.style.display = this.checked ? 'block' : 'none';
+                if (!this.checked) otherDetail.value = '';
+            });
+
+            noDiseaseCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    document.querySelectorAll('input[name="disease"]').forEach(function(cb) {
+                        if (cb !== noDiseaseCheckbox) {
+                            cb.checked = false;
+                            var parentOption = cb.closest('.option');
+                            if (parentOption) {
+                                parentOption.classList.remove('selected');
+                            }
+                        }
+                    });
+                    jointDetail.style.display = 'none';
+                    jointDetail.value = '';
+                    spineDetail.style.display = 'none';
+                    spineDetail.value = '';
+                    otherDetail.style.display = 'none';
+                    otherDetail.value = '';
+                }
+            });
+
+            document.querySelectorAll('input[name="disease"]').forEach(function(cb) {
+                if (cb !== noDiseaseCheckbox) {
+                    cb.addEventListener('change', function() {
+                        if (this.checked) {
+                            noDiseaseCheckbox.checked = false;
+                            var noDiseaseOption = noDiseaseCheckbox.closest('.option');
+                            if (noDiseaseOption) {
+                                noDiseaseOption.classList.remove('selected');
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        function initializeTimeSlotCheckboxes() {
+            ['weekdayDay', 'weekdayNight', 'weekendDay', 'weekendNight'].forEach(function(id) {
+                var checkbox = document.getElementById(id);
+                var timeInput = document.getElementById(id + 'Time');
+                checkbox.addEventListener('change', function() {
+                    timeInput.style.display = this.checked ? 'block' : 'none';
+                });
+            });
+        }
+
+        function setupGenderInput() {
+            var genderInputs = document.querySelectorAll('input[name="genderSelect"]');
+            genderInputs.forEach(function(input) {
+                input.addEventListener('change', function() {
+                    genderInputs.forEach(function(radio) {
+                        if (radio.closest('.option')) {
+                            radio.closest('.option').classList.remove('selected');
+                        }
+                    });
+                    
+                    if (this.checked && this.closest('.option')) {
+                        this.closest('.option').classList.add('selected');
+                    }
+                });
+            });
+        }
+
+        function setupEmailInput() {
+            var emailInput = document.getElementById('email');
+            var suggestionsDiv = document.getElementById('emailDomainSuggestions');
+            var domains = ['gmail.com', 'yahoo.com.tw', 'hotmail.com', 'outlook.com', 'icloud.com'];
+            
+            emailInput.addEventListener('input', function(e) {
+                var value = e.target.value;
+                
+                if (value.includes('@') && value.split('@')[1].length > 0) {
+                    suggestionsDiv.style.display = 'none';
+                    return;
+                }
+                
+                if (value.includes('@')) {
+                    var username = value.split('@')[0];
+                    if (!username) {
+                        suggestionsDiv.style.display = 'none';
+                        return;
+                    }
+                    
+                    suggestionsDiv.innerHTML = domains.map(function(domain) {
+                        return '<div class="email-domain-item" onclick="selectEmailDomain(\'' + username + '@' + domain + '\')">' + username + '@' + domain + '</div>';
+                    }).join('');
+                    suggestionsDiv.style.display = 'block';
+                } else {
+                    suggestionsDiv.style.display = 'none';
+                }
+            });
+            
+            document.addEventListener('click', function(e) {
+                if (!emailInput.contains(e.target) && !suggestionsDiv.contains(e.target)) {
+                    suggestionsDiv.style.display = 'none';
+                }
+            });
+        }
+
+        function selectEmailDomain(email) {
+            document.getElementById('email').value = email;
+            document.getElementById('emailDomainSuggestions').style.display = 'none';
+        }
+
+        function setupPhoneInput() {
+            var phoneInput = document.getElementById('phone');
+            if (phoneInput) {
+                phoneInput.addEventListener('input', function() {
+                    this.value = this.value.replace(/[^0-9]/g, '');
+                });
+            }
+        }
+
+        function loadVenueRules() {
+            var rulesHTML = '<div style="color: #5f846f; line-height: 1.6; font-size: 15px;"><h3 style="color: #5f846f; font-size: 18px; font-weight: 700; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid #7ac19a;">場館規範</h3><p style="margin-bottom: 18px; color: #66888e; font-size: 14px;">為提供穩定及高品質的課程體驗,敬請上課學員配合以下規範</p><div style="display: grid; gap: 12px; margin-bottom: 18px;"><div style="background: #fcf4e3; padding: 14px; border-radius: 10px; border-left: 4px solid #ffe08b;"><strong style="color: #ba9e60;">1.</strong> 採全預約制,預約依照系統為準,不做口頭保留</div><div style="background: #fcf4e3; padding: 14px; border-radius: 10px; border-left: 4px solid #ffe08b;"><strong style="color: #ba9e60;">2.</strong> 為維護三方權益,到場上課務必進行紙本及電子簽到</div><div style="background: #fcf4e3; padding: 14px; border-radius: 10px; border-left: 4px solid #ffe08b;"><strong style="color: #ba9e60;">3.</strong> 除飲用水外,私人物品請寄放於置物櫃</div><div style="background: #fcf4e3; padding: 14px; border-radius: 10px; border-left: 4px solid #ffe08b;"><strong style="color: #ba9e60;">4.</strong> 運動/伸展/等待區域禁止用餐</div><div style="background: #fcf4e3; padding: 14px; border-radius: 10px; border-left: 4px solid #ffe08b;"><strong style="color: #ba9e60;">5.</strong> 服裝規範:全館須脫鞋、須著運動服裝</div><div style="background: #fcf4e3; padding: 14px; border-radius: 10px; border-left: 4px solid #ffe08b;"><strong style="color: #ba9e60;">6.</strong> 正課學員若攜陪同者,陪同者不得滯留超過15分鐘</div></div><div style="background: linear-gradient(135deg, #66888e 0%, #5f846f 100%); color: #ffffff; padding: 18px; border-radius: 12px; margin: 18px 0; text-align: center; font-weight: 600; font-size: 14px;">為維護他人上課品質及權益,場館有權拒絕未遵守規範者進入<br>※衡點健康保留最終解釋權</div><div style="background: #faece8; padding: 18px; border-radius: 12px; margin-bottom: 24px; border: 2px solid #f2ac98;"><h3 style="color: #c67566; font-size: 17px; font-weight: 700; margin-bottom: 14px;">取消及請假政策</h3><div style="display: grid; gap: 10px;"><div style="background: #ffffff; padding: 12px; border-radius: 8px; border-left: 3px solid #f2ac98;"><strong>一般「取消預約」政策:</strong><br>預約日的<span style="color: #ba9e60; font-weight: bold;">前一天晚上8點前</span>提出取消</div><div style="background: #ffffff; padding: 12px; border-radius: 8px; border-left: 3px solid #f2ac98;"><strong>臨時「請假」政策:</strong><br>課程<span style="color: #ba9e60; font-weight: bold;">前3小時</span>提出請假<br><strong style="color: #c67566;">補課卡:300元</strong></div><div style="background: #ffffff; padding: 12px; border-radius: 8px; border-left: 3px solid #f2ac98;"><strong style="color: #c67566;">重要提醒:</strong><br>無遵守規則皆視同「曠課」,曠課無法進行補課</div></div></div><div style="background: #daedec; padding: 14px; border-radius: 10px; text-align: center; color: #66888e; font-size: 13px;">如有疑問請洽官方LINE<br><span style="font-size: 12px;">衡點健康 © 2025</span></div></div>';
+            
+            document.getElementById('venueRules').innerHTML = rulesHTML;
+            
+            var rulesContainer = document.getElementById('venueRules');
+            var agreeCheckbox = document.getElementById('agreeRules');
+            var agreeLabel = document.getElementById('agreeRulesLabel');
+            
+            rulesContainer.addEventListener('scroll', function() {
+                var isAtBottom = rulesContainer.scrollHeight - rulesContainer.scrollTop - rulesContainer.clientHeight < 5;
+                
+                if (isAtBottom) {
+                    agreeCheckbox.disabled = false;
+                    agreeLabel.style.cursor = 'pointer';
+                    agreeLabel.style.opacity = '1';
+                    agreeLabel.style.background = 'linear-gradient(135deg, #fcf4e3 0%, #daedec 100%)';
+                }
+            });
+        }
+
+        function toggleEdit(section) {
+            editingSections[section] = !editingSections[section];
+            var button = event.target;
+            
+            if (section === 'basic') {
+                var nameInput = document.getElementById('edit_name');
+                var genderInputs = document.querySelectorAll('input[name="editGenderSelect"]');
+                var birthdayInput = document.getElementById('edit_birthday');
+                var emailInput = document.getElementById('edit_email');
+                var phoneInput = document.getElementById('edit_phone');
+                
+                if (editingSections[section]) {
+                    nameInput.disabled = false;
+                    genderInputs.forEach(function(input) { input.disabled = false; });
+                    birthdayInput.disabled = false;
+                    emailInput.disabled = false;
+                    phoneInput.disabled = false;
+                    button.textContent = '保存';
+                } else {
+                    if (!validateBasicInfoEdit()) {
+                        editingSections[section] = true;
+                        return;
+                    }
+                    nameInput.disabled = true;
+                    genderInputs.forEach(function(input) { input.disabled = true; });
+                    birthdayInput.disabled = true;
+                    emailInput.disabled = true;
+                    phoneInput.disabled = true;
+                    button.textContent = '修改';
+                }
+            } else if (section === 'fitness') {
+                var goalsDisplay = document.getElementById('edit_goals_display');
+                var goalsContainer = document.getElementById('edit_goals_container');
+                var courseDisplay = document.getElementById('edit_course_display');
+                var courseContainer = document.getElementById('edit_course_container');
+                var remarksTextarea = document.getElementById('edit_remarks');
+                
+                if (editingSections[section]) {
+                    goalsDisplay.style.display = 'none';
+                    goalsContainer.style.display = 'block';
+                    courseDisplay.style.display = 'none';
+                    courseContainer.style.display = 'block';
+                    remarksTextarea.disabled = false;
+                    button.textContent = '保存';
+                } else {
+                    var goalsSelect = document.getElementById('edit_goals');
+                    var courseSelect = document.getElementById('edit_course');
+                    var selectedGoals = Array.from(goalsSelect.selectedOptions).map(function(opt) { return opt.value; });
+                    var selectedCourses = Array.from(courseSelect.selectedOptions).map(function(opt) { return opt.value; });
+                    
+                    if (selectedGoals.length === 0) {
+                        alert('請至少選擇一項健身目標');
+                        editingSections[section] = true;
+                        return;
+                    }
+                    
+                    if (selectedCourses.length === 0) {
+                        alert('請至少選擇一項課程偏好');
+                        editingSections[section] = true;
+                        return;
+                    }
+                    
+                    formData.goals = selectedGoals;
+                    formData.courses = selectedCourses;
+                    formData.remarks = remarksTextarea.value;
+                    
+                    goalsDisplay.style.display = 'block';
+                    goalsContainer.style.display = 'none';
+                    courseDisplay.style.display = 'block';
+                    courseContainer.style.display = 'none';
+                    remarksTextarea.disabled = true;
+                    button.textContent = '修改';
+                    
+                    document.getElementById('edit_goals_display').textContent = selectedGoals.join('、');
+                    document.getElementById('edit_course_display').textContent = selectedCourses.join('、');
+                }
+            }
+        }
+
+        function validateBasicInfoEdit() {
+            var name = document.getElementById('edit_name').value.trim();
+            var genderChecked = document.querySelector('input[name="editGenderSelect"]:checked');
+            var birthday = document.getElementById('edit_birthday').value;
+            var email = document.getElementById('edit_email').value.trim();
+            var phone = document.getElementById('edit_phone').value.trim();
+            
+            var errorDiv = document.getElementById('editError');
+            errorDiv.style.display = 'none';
+            
+            if (!name) { errorDiv.textContent = '請輸入姓名'; errorDiv.style.display = 'block'; return false; }
+            if (!genderChecked) { errorDiv.textContent = '請選擇性別'; errorDiv.style.display = 'block'; return false; }
+            if (!birthday) { errorDiv.textContent = '請選擇生日'; errorDiv.style.display = 'block'; return false; }
+            
+            var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!email || !emailPattern.test(email)) { errorDiv.textContent = '請輸入有效的電子信箱'; errorDiv.style.display = 'block'; return false; }
+            if (phone.length !== 10 || !phone.startsWith('09')) { errorDiv.textContent = '請輸入正確的手機號碼'; errorDiv.style.display = 'block'; return false; }
+            
+            return true;
+        }
+
+        function nextPage() {
+            if (!validateCurrentPage()) return;
+            
+            saveCurrentPageData();
+            saveFormDataToStorage();
+            
+            if (currentPage === 6) {
+                displayReviewData();
+            }
+            
+            document.querySelectorAll('.question-page').forEach(function(page) {
+                page.classList.remove('active');
+            });
+            
+            currentPage++;
+            var nextPageElement = document.querySelector('[data-page="' + currentPage + '"]');
+            if (nextPageElement) {
+                nextPageElement.classList.add('active');
+            }
+            updateProgress();
+            window.scrollTo(0, 0);
+        }
+
+        function prevPage() {
+            document.querySelectorAll('.question-page').forEach(function(page) {
+                page.classList.remove('active');
+            });
+            
+            currentPage--;
+            
+            var prevPageElement = document.querySelector('[data-page="' + currentPage + '"]');
+            if (prevPageElement) {
+                prevPageElement.classList.add('active');
+            }
+            updateProgress();
+            window.scrollTo(0, 0);
+        }
+
+        function validateCurrentPage() {
+            document.querySelectorAll('.error-message').forEach(function(el) { el.style.display = 'none'; });
+            
+            if (currentPage === 1) {
+                if (document.querySelectorAll('input[name="goal"]:checked').length === 0) {
+                    document.getElementById('goalError').style.display = 'block';
+                    alert('⚠️ 請至少選擇一項健身目標');
+                    return false;
+                }
+            }
+            
+            if (currentPage === 2) {
+                if (document.querySelectorAll('input[name="course"]:checked').length === 0) {
+                    document.getElementById('courseError').style.display = 'block';
+                    alert('⚠️ 請至少選擇一項課程類型');
+                    return false;
+                }
+            }
+            
+            if (currentPage === 3) {
+                if (document.querySelectorAll('input[name="disease"]:checked').length === 0) {
+                    document.getElementById('diseaseError').style.display = 'block';
+                    alert('⚠️ 請至少選擇一項疾病史選項');
+                    return false;
+                }
+            }
+            
+            if (currentPage === 5) {
+                var name = document.getElementById('name').value.trim();
+                var genderChecked = document.querySelector('input[name="genderSelect"]:checked');
+                var year = document.getElementById('birthdayYear').value;
+                var month = document.getElementById('birthdayMonth').value;
+                var day = document.getElementById('birthdayDay').value;
+                var email = document.getElementById('email').value.trim();
+                var phone = document.getElementById('phone').value.trim();
+                var errorDiv = document.getElementById('basicInfoError');
+                
+                if (!name) { errorDiv.textContent = '請輸入姓名'; errorDiv.style.display = 'block'; return false; }
+                if (!genderChecked) { errorDiv.textContent = '請選擇性別'; errorDiv.style.display = 'block'; return false; }
+                if (!year || !month || !day) { errorDiv.textContent = '請選擇完整的生日'; errorDiv.style.display = 'block'; return false; }
+                
+                var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!email || !emailPattern.test(email)) { errorDiv.textContent = '請輸入有效的電子信箱'; errorDiv.style.display = 'block'; return false; }
+                if (phone.length !== 10 || !phone.startsWith('09')) { errorDiv.textContent = '請輸入正確的手機號碼'; errorDiv.style.display = 'block'; return false; }
+            }
+            
+            return true;
+        }
+
+        function saveCurrentPageData() {
+            if (currentPage === 1) {
+                formData.goals = Array.from(document.querySelectorAll('input[name="goal"]:checked')).map(function(cb) { return cb.value; });
+            }
+            if (currentPage === 2) {
+                formData.courses = Array.from(document.querySelectorAll('input[name="course"]:checked')).map(function(cb) { return cb.value; });
+            }
+            if (currentPage === 3) {
+                formData.diseases = [];
+                
+                var allCheckedBoxes = document.querySelectorAll('input[name="disease"]:checked');
+                
+                allCheckedBoxes.forEach(function(checkbox) {
+                    var checkboxId = checkbox.id;
+                    var checkboxValue = checkbox.value;
+                    
+                    if (checkboxId === 'jointIssue') {
+                        var jointDetail = document.getElementById('jointDetail').value.trim();
+                        if (jointDetail) {
+                            formData.diseases.push('關節問題: ' + jointDetail);
+                        } else {
+                            formData.diseases.push('關節問題');
+                        }
+                    } else if (checkboxId === 'spineIssue') {
+                        var spineDetail = document.getElementById('spineDetail').value.trim();
+                        if (spineDetail) {
+                            formData.diseases.push('脊椎問題: ' + spineDetail);
+                        } else {
+                            formData.diseases.push('脊椎問題');
+                        }
+                    } else if (checkboxId === 'otherDisease') {
+                        var otherDetail = document.getElementById('otherDetail').value.trim();
+                        if (otherDetail) {
+                            formData.diseases.push('其他: ' + otherDetail);
+                        } else {
+                            formData.diseases.push('其他');
+                        }
+                    } else {
+                        formData.diseases.push(checkboxValue);
+                    }
+                });
+            }
+            if (currentPage === 4) {
+                formData.remarks = document.getElementById('remarks').value;
+            }
+            if (currentPage === 5) {
+                formData.name = document.getElementById('name').value.trim();
+                var genderChecked = document.querySelector('input[name="genderSelect"]:checked');
+                formData.gender = genderChecked ? genderChecked.value : '';
+                formData.birthday = document.getElementById('birthday').value;
+                formData.email = document.getElementById('email').value.trim();
+                formData.phone = document.getElementById('phone').value.trim();
+            }
+            if (currentPage === 6) {
+                formData.timePreferences = [];
+                ['weekdayDay', 'weekdayNight', 'weekendDay', 'weekendNight'].forEach(function(id) {
+                    var checkbox = document.getElementById(id);
+                    if (checkbox.checked) {
+                        var time = document.getElementById(id + 'Time').value;
+                        formData.timePreferences.push({ slot: checkbox.value, time: time || '' });
+                    }
+                });
+                var flexCheckbox = document.querySelector('input[name="timeSlot"][value="彈性不固定"]');
+                if (flexCheckbox && flexCheckbox.checked) {
+                    formData.timePreferences.push({ slot: '彈性不固定', time: '' });
+                }
+            }
+        }
+
+        function displayReviewData() {
+            document.getElementById('edit_name').value = formData.name || '';
+            
+            if (formData.gender) {
+                var genderRadio = document.querySelector('input[name="editGenderSelect"][value="' + formData.gender + '"]');
+                if (genderRadio) {
+                    genderRadio.checked = true;
+                    genderRadio.parentElement.classList.add('selected');
+                }
+            }
+            
+            document.getElementById('edit_birthday').value = formData.birthday || '';
+            document.getElementById('edit_email').value = formData.email || '';
+            document.getElementById('edit_phone').value = formData.phone || '';
+            document.getElementById('edit_remarks').value = formData.remarks || '';
+            
+            var goalsSelect = document.getElementById('edit_goals');
+            Array.from(goalsSelect.options).forEach(function(option) {
+                option.selected = (formData.goals || []).includes(option.value);
+            });
+            
+            var courseSelect = document.getElementById('edit_course');
+            Array.from(courseSelect.options).forEach(function(option) {
+                option.selected = (formData.courses || []).includes(option.value);
+            });
+            
+            document.getElementById('edit_goals_display').textContent = (formData.goals || []).join('、') || '未填寫';
+            document.getElementById('edit_course_display').textContent = (formData.courses || []).join('、') || '未填寫';
+            document.getElementById('edit_diseases_display').textContent = (formData.diseases || []).join('、') || '未填寫';
+            
+            var timePrefsHTML = (formData.timePreferences || []).map(function(tp) {
+                return '<p style="margin-bottom: 8px;"><strong>' + tp.slot + ':</strong> ' + (tp.time || '全時段') + '</p>';
+            }).join('');
+            document.getElementById('edit_time_preferences').innerHTML = timePrefsHTML || '<p style="color: #808080;">未填寫</p>';
+        }
+
+        function saveEditedData() {
+            for (var section in editingSections) {
+                if (editingSections[section]) {
+                    alert('請先保存所有修改');
+                    return;
+                }
+            }
+            
+            formData.name = document.getElementById('edit_name').value.trim();
+            var genderChecked = document.querySelector('input[name="editGenderSelect"]:checked');
+            formData.gender = genderChecked ? genderChecked.value : '';
+            formData.birthday = document.getElementById('edit_birthday').value;
+            formData.email = document.getElementById('edit_email').value.trim();
+            formData.phone = document.getElementById('edit_phone').value.trim();
+            
+            var goalsSelect = document.getElementById('edit_goals');
+            formData.goals = Array.from(goalsSelect.selectedOptions).map(function(opt) { return opt.value; });
+            
+            var courseSelect = document.getElementById('edit_course');
+            formData.courses = Array.from(courseSelect.selectedOptions).map(function(opt) { return opt.value; });
+            
+            formData.remarks = document.getElementById('edit_remarks').value;
+            
+            nextPage();
+        }
+
+        function goToBooking() {
+            window.location.href = 'https://liff.line.me/2008660081-5A92onj7';
+        }
+
+        async function submitFormLater() {
+            if (!document.getElementById('agreeRules').checked) {
+                document.getElementById('rulesError').style.display = 'block';
+                alert('⚠️ 請勾選同意場館規範');
+                return;
+            }
+            
+            formData.bookingType = '稍後預約';
+            await submitToWebhook(false);
+        }
+
+        async function submitFormNow() {
+            if (!document.getElementById('agreeRules').checked) {
+                document.getElementById('rulesError').style.display = 'block';
+                alert('⚠️ 請勾選同意場館規範');
+                return;
+            }
+            
+            formData.bookingType = '馬上預約';
+            await submitToWebhook(true);
+        }
+
+        async function submitToWebhook(redirectToBooking) {
+            var buttons = document.querySelectorAll('[data-page="8"] .button');
+            buttons.forEach(function(btn) {
+                btn.disabled = true;
+                btn.style.opacity = '0.6';
+            });
+            
+            saveCurrentPageData();
+            
+            var submitData = {
+                action: 'submit',
+                lineId: formData.lineId || '',
+                displayName: formData.displayName || '',
+                name: formData.name || '',
+                gender: formData.gender || '',
+                birthday: formData.birthday || '',
+                email: formData.email || '',
+                phone: formData.phone || '',
+                goals: (formData.goals || []).join('、'),
+                courses: (formData.courses || []).join('、'),
+                diseases: (formData.diseases || []).join('、'),
+                remarks: formData.remarks || '',
+                timePreferences: (formData.timePreferences || []).map(function(tp) { return tp.slot + ': ' + (tp.time || '全時段'); }).join(' | '),
+                bookingType: formData.bookingType || '',
+                submittedAt: new Date().toISOString()
+            };
+            
+            try {
+                var response = await fetch(WEBHOOK_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'cancelBooking', userId: userId, bookingId: existingBooking?.id })
+                    body: JSON.stringify(submitData)
                 });
-                const text = await response.text();
-                let result;
-                try { result = JSON.parse(text); } catch (e) { throw new Error('系統設定中，請稍後再試'); }
-                if (result.success) {
-                    hideCancelModal();
-                    existingBooking = null;
-                    showBookingFlow();
-                    alert('預約已取消，您可以重新預約');
-                } else { throw new Error(result.message || '取消失敗'); }
-            } catch (error) { alert('取消失敗：' + error.message); }
-            finally { cancelBtn.disabled = false; cancelBtn.textContent = '確定取消'; }
+                
+                if (response.ok) {
+                    localStorage.removeItem('fitnessFormData');
+                    
+                    if (redirectToBooking) {
+                        window.location.href = 'https://liff.line.me/2008660081-5A92onj7';
+                    } else {
+                        document.querySelectorAll('.question-page').forEach(function(page) {
+                            page.classList.remove('active');
+                        });
+                        currentPage = 9;
+                        document.querySelector('[data-page="9"]').classList.add('active');
+                        document.getElementById('bookNowButtonContainer').style.display = 'block';
+                        updateProgress();
+                        window.scrollTo(0, 0);
+                    }
+                } else {
+                    buttons.forEach(function(btn) { btn.disabled = false; btn.style.opacity = '1'; });
+                    alert('提交失敗,請稍後再試');
+                }
+            } catch (error) {
+                console.error('提交錯誤:', error);
+                buttons.forEach(function(btn) { btn.disabled = false; btn.style.opacity = '1'; });
+                alert('網路錯誤,請稍後再試');
+            }
         }
 
-        function closeLiff() {
-            if (liff.isInClient()) { liff.closeWindow(); }
-            else { window.close(); }
+        function updateProgress() {
+            var progress = (currentPage / totalPages) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
         }
 
-        function formatDate(date) {
-            const year = date.getFullYear();
-            const month = (date.getMonth() + 1).toString().padStart(2, '0');
-            const day = date.getDate().toString().padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        }
-
-        function formatDisplayDate(dateStr) {
-            if (!dateStr) return '-';
-            const date = new Date(dateStr);
-            const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
-            return `${date.getMonth() + 1}月${date.getDate()}日 (${weekdays[date.getDay()]})`;
-        }
+        document.addEventListener('change', function(e) {
+            if (e.target.type === 'checkbox' || e.target.type === 'radio') {
+                var option = e.target.closest('.option');
+                if (option) {
+                    if (e.target.type === 'radio') {
+                        var radioName = e.target.name;
+                        document.querySelectorAll('input[name="' + radioName + '"]').forEach(function(radio) {
+                            var parentOption = radio.closest('.option');
+                            if (parentOption) parentOption.classList.remove('selected');
+                        });
+                    }
+                    
+                    if (e.target.checked) {
+                        option.classList.add('selected');
+                    } else {
+                        option.classList.remove('selected');
+                    }
+                }
+            }
+        });
     </script>
 </body>
 </html>
